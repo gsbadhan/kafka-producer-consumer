@@ -10,10 +10,28 @@
 	<properties>
 		<junit>4.12</junit>
 		<guava.version>21.0</guava.version>
+		<kafka.clients>1.0.0</kafka.clients>
+		<sl4j.version>1.7.25</sl4j.version>
 	</properties>
 
 
 	<dependencies>
+
+		<dependency>
+			<groupId>org.apache.kafka</groupId>
+			<artifactId>kafka-clients</artifactId>
+			<version>${kafka.clients}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>${sl4j.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-log4j12</artifactId>
+			<version>${sl4j.version}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>com.google.guava</groupId>
