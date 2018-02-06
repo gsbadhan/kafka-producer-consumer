@@ -12,9 +12,9 @@ import org.apache.kafka.clients.producer.Producer;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.apache.kafka.clients.producer.RecordMetadata;
 
-public class PushMsgPerPartition {
+public class PushMsgPerTopic {
 
-	private PushMsgPerPartition() {
+	private PushMsgPerTopic() {
 
 	}
 
@@ -33,11 +33,11 @@ public class PushMsgPerPartition {
 		producer = new KafkaProducer<>(props);
 	}
 
-	// send data to topic and tell partition
-	public static void send(final String topic, int partition, List<String> data) {
+	// send data to topic, no need to tell partition
+	public static void send(final String topic, List<String> data) {
 		for (String msg : data) {
 			Future<RecordMetadata> status = producer
-					.send(new ProducerRecord<String, String>(topic, partition, String.valueOf(msg.hashCode()), msg));
+					.send(new ProducerRecord<String, String>(topic, String.valueOf(msg.hashCode()), msg));
 			try {
 				RecordMetadata metadata = status.get(200, TimeUnit.MILLISECONDS);
 				System.out.println("msg [" + data + "] sent to partition[" + metadata.partition() + "]");
@@ -51,10 +51,11 @@ public class PushMsgPerPartition {
 		}
 	}
 
-	// send data to topic and maximum partitions created for topic
+	// send data to topic, partition info get from topic
 	public static void sendAcrossPartitions(final String topic, int totalPartition, List<String> data) {
+		int maxPartition = producer.partitionsFor(topic).size();
 		for (int i = 0; i < data.size(); i++) {
-			int partition = (i % totalPartition);
+			int partition = (i % maxPartition);
 			Future<RecordMetadata> status = producer.send(new ProducerRecord<String, String>(topic, partition,
 					String.valueOf(data.get(i).hashCode()), data.get(i)));
 			try {
