@@ -22,6 +22,7 @@ public class PushMsgPerPartition {
 	private static Producer<String, String> producer = null;
 
 	static {
+		// broker IPs
 		props.put("bootstrap.servers", "localhost:9092");
 		props.put("acks", "all");
 		props.put("retries", 0);
