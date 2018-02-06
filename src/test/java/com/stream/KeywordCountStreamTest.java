@@ -14,7 +14,9 @@ public class KeywordCountStreamTest {
 	}
 
 	@Test
-	public void testStartKeywordCountStream() {
+	public void testStartKeywordCountStream() throws InterruptedException {
 		KeywordCountStream.startKeywordCountStream();
+		// wait for
+		Thread.sleep(30 * 60 * 1000);
 	}
 }

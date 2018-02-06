@@ -37,7 +37,6 @@ public class KeywordCountStream {
 				.count(Materialized.<String, Long, KeyValueStore<Bytes, byte[]>>as("keyword-count-store"));
 
 		keywordCounts.toStream().to("keywords-count", Produced.with(Serdes.String(), Serdes.Long()));
-
 		KafkaStreams streams = new KafkaStreams(streamsBuilder.build(), config);
 		streams.start();
 
