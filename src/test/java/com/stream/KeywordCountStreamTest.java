@@ -19,4 +19,12 @@ public class KeywordCountStreamTest {
 		// wait for
 		Thread.sleep(30 * 60 * 1000);
 	}
+
+	@Test
+	public void testStartUserClickMonitoringStream() throws InterruptedException {
+		KeywordCountStream.startUserClickMonitoringStream();
+		// wait for
+		Thread.sleep(30 * 60 * 1000);
+	}
+
 }

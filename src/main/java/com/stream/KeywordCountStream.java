@@ -39,7 +39,22 @@ public class KeywordCountStream {
 		keywordCounts.toStream().to("keywords-count", Produced.with(Serdes.String(), Serdes.Long()));
 		KafkaStreams streams = new KafkaStreams(streamsBuilder.build(), config);
 		streams.start();
-
+		Runtime.getRuntime().addShutdownHook(new Thread(streams::close));
 		System.out.println("keywords topic stteaming started..");
 	}
+
+	public static void startUserClickMonitoringStream() {
+		final String topic = "userclicks";
+		StreamsBuilder streamsBuilder = new StreamsBuilder();
+		KStream<String, String> kStream = streamsBuilder.stream(topic);
+		KTable<String, Long> clickCount = kStream.flatMapValues(data -> Arrays.asList(data.replaceFirst("\\|", "-")))
+				.groupBy((k, v) -> v)
+				.count(Materialized.<String, Long, KeyValueStore<Bytes, byte[]>>as("userclickcount"));
+		clickCount.toStream().to("userclickcount", Produced.with(Serdes.String(), Serdes.Long()));
+		KafkaStreams streams = new KafkaStreams(streamsBuilder.build(), config);
+		streams.start();
+		Runtime.getRuntime().addShutdownHook(new Thread(streams::close));
+		System.out.println("user click count started..");
+	}
+
 }
