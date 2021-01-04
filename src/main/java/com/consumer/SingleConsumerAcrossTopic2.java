@@ -1,5 +1,7 @@
 package com.consumer;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -16,7 +18,7 @@ import org.apache.kafka.common.TopicPartition;
 public class SingleConsumerAcrossTopic2 {
     private Properties                    properties                   = new Properties();
     private KafkaConsumer<String, String> consumer                     = null;
-    private long                          pollingTime                  = 100;
+    private long                          pollingTime                  = 1000;
     private long                          MAX_RECORDS_TO_COMMIT_OFFSET = 10;
 
     public SingleConsumerAcrossTopic2() {
@@ -38,7 +40,7 @@ public class SingleConsumerAcrossTopic2 {
             Map<TopicPartition, OffsetAndMetadata> partitionOffset = Collections.synchronizedMap(new HashMap<TopicPartition, OffsetAndMetadata>());
 
             System.out.println("consumerThread:" + Thread.currentThread().getId() + " consumer.poll");
-            ConsumerRecords<String, String> records = consumer.poll(pollingTime);
+            ConsumerRecords<String, String> records = consumer.poll(Duration.of(pollingTime, ChronoUnit.MILLIS));
             if (records.isEmpty()) {
                 System.out.println("consumerThread:" + Thread.currentThread().getId() + " no record found!!");
                 Thread.sleep(1000);

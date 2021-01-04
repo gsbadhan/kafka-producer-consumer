@@ -1,5 +1,7 @@
 package com.consumer;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
@@ -14,7 +16,7 @@ public class SingleConsumerAcrossTopic {
 
     private static Properties                    properties                   = new Properties();
     private static KafkaConsumer<String, String> consumer                     = null;
-    private static long                          pollingTime                  = 100;
+    private static long                          pollingTime                  = 1000;
     private static long                          MAX_RECORDS_TO_COMMIT_OFFSET = 10;
     static {
         properties.put("bootstrap.servers", "localhost:9092");
@@ -33,7 +35,7 @@ public class SingleConsumerAcrossTopic {
         consumer.subscribe(topics);
         int numberOfMsgConsumed = 0;
         while (true) {
-            ConsumerRecords<String, String> records = consumer.poll(pollingTime);
+            ConsumerRecords<String, String> records = consumer.poll(Duration.of(pollingTime, ChronoUnit.MILLIS));
             if (records.isEmpty()) {
                 System.out.println("consumerThread:" + Thread.currentThread().getId() + " no record found!!");
                 continue;
