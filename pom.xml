@@ -9,7 +9,7 @@
 	<description />
 
 	<properties>
-		<junit>4.12</junit>
+		<junit>4.13.1</junit>
 		<guava.version>30.1-jre</guava.version>
 		<kafka.clients>2.7.0</kafka.clients>
 		<sl4j.version>1.7.25</sl4j.version>
