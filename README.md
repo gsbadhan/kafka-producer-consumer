@@ -1,5 +1,5 @@
 
-## Download and install Apache Kafka version : kafka_2.12-1.0.0
+## Download and install Apache Kafka version : kafka_2.12-3.5.1
 
 
 ## start zookeeper
@@ -11,15 +11,15 @@
 
 
 ## start topic, exmaple dataitems
-./kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 --partitions 3 --topic dataitems
+./kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 3 --topic dataitems
 
 
 ## list of topics
-./kafka-topics.sh --list --zookeeper localhost:2181
+./kafka-topics.sh --list --bootstrap-server localhost:9092
 
 
 ## status of topic
-./kafka-topics.sh --describe --zookeeper localhost:2181 --topic events
+./kafka-topics.sh --describe --bootstrap-server localhost:9092 --topic dataitems
 
 
 ## push message into topic (console)
