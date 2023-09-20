@@ -2,7 +2,7 @@
 <configuration>
 
 	<property name="PATH"
-		value="/Users/gurpreet.singh/git/kafka-producer-consumer" />
+		value="/tmp/logs" />
 
 	<appender name="STDOUT"
 		class="ch.qos.logback.core.ConsoleAppender">
@@ -16,7 +16,7 @@
 
 	<appender name="FILE"
 		class="ch.qos.logback.core.rolling.RollingFileAppender">
-		<file>${PATH}/debug.log</file>
+		<file>app.log</file>
 		<encoder
 			class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
 			<Pattern>
@@ -26,7 +26,7 @@
 
 		<rollingPolicy
 			class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-			<fileNamePattern>${PATH}/archived/debug.%d{yyyy-MM-dd}.%i.log
+			<fileNamePattern>archived/debug.%d{yyyy-MM-dd}.%i.log
 			</fileNamePattern>
 			<timeBasedFileNamingAndTriggeringPolicy
 				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">

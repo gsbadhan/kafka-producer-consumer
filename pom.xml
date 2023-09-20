@@ -9,9 +9,9 @@
 	<description />
 
 	<properties>
-		<junit>4.13.1</junit>
-		<guava.version>30.1-jre</guava.version>
-		<kafka.clients>2.7.0</kafka.clients>
+		<junit>4.13.2</junit>
+		<guava.version>32.1.2-jre</guava.version>
+		<kafka.clients>3.5.1</kafka.clients>
 		<sl4j.version>1.7.25</sl4j.version>
 	</properties>
 

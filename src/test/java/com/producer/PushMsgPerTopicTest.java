@@ -19,7 +19,7 @@ public class PushMsgPerTopicTest {
     // send message to particular topic without knowing the partition
     @Test
     public void testSend() {
-        String topic = "testsms";
+        String topic = "dataitems";
         List<String> data = new ArrayList<>();
 
         long delta = System.currentTimeMillis() + (2 * 60 * 1000);
