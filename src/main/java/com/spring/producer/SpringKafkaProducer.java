@@ -17,7 +17,7 @@ import java.util.concurrent.TimeoutException;
 public class SpringKafkaProducer {
 
     @Autowired
-    @Qualifier("strKafkaTemplate")
+    @Qualifier("strKVkafkaTemplate")
     private KafkaTemplate<String, String> kafkaTemplate;
 
     public void sendMessageStringKV(String topic, String key, String data) {
@@ -30,6 +30,7 @@ public class SpringKafkaProducer {
         } catch (ExecutionException e) {
             throw new RuntimeException(e);
         } catch (TimeoutException e) {
+            //TODO: you may retry before throwing exception
             throw new RuntimeException(e);
         }
     }

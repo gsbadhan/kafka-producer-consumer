@@ -1,5 +1,6 @@
 package com.spring;
 
+import com.spring.consumer.SpringKafkaListener;
 import com.spring.producer.SpringKafkaProducer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,8 +26,11 @@ public class StartKafkaApp implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        springKafkaProducer.sendMessageStringKV("dataitems","1001","testmsg1");
-        springKafkaProducer.sendMessageStringKV("dataitems","1002","testmsg2");
-        springKafkaProducer.sendMessageStringKV("dataitems","1003","testmsg3");
+        Thread.sleep(10 * 1000);
+        springKafkaProducer.sendMessageStringKV("dataitems", "1001", "testmsg1");
+        Thread.sleep(5 * 1000);
+        springKafkaProducer.sendMessageStringKV("dataitems", "1002", "testmsg2");
+        Thread.sleep(5 * 1000);
+        springKafkaProducer.sendMessageStringKV("dataitems", "1003", "testmsg3");
     }
 }
