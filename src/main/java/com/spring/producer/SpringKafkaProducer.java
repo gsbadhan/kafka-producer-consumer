@@ -20,11 +20,12 @@ public class SpringKafkaProducer {
     @Qualifier("strKVkafkaTemplate")
     private KafkaTemplate<String, String> kafkaTemplate;
 
-    public void sendMessageStringKV(String topic, String key, String data) {
+    public boolean sendMessageStringKV(String topic, String key, String data) {
         CompletableFuture future = kafkaTemplate.send(topic, key, data);
         try {
             SendResult result = (SendResult) future.get(1000, TimeUnit.MILLISECONDS);
             log.info("producer ack={}", result);
+            return true;
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
         } catch (ExecutionException e) {
