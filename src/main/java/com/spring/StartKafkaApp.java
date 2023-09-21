@@ -1,6 +1,5 @@
 package com.spring;
 
-import com.spring.consumer.SpringKafkaListener;
 import com.spring.producer.SpringKafkaProducer;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;

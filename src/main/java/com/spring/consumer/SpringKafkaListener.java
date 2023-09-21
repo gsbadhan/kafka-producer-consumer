@@ -17,6 +17,8 @@ public class SpringKafkaListener {
                                @Header(KafkaHeaders.OFFSET) int offset, Acknowledgment ack) {
         log.info("received message={}, partition={}, offset={}, ack={}", message, partition, offset,ack);
 
+        //TODO: process message
+
         //sending ack after consuming message or committing offset
         ack.acknowledge();
     }
