@@ -27,6 +27,9 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * Note: Not fully functional
+ */
 @SpringBootTest
 @RunWith(SpringRunner.class)
 @DirtiesContext

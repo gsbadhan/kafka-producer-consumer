@@ -16,6 +16,11 @@ import java.util.Map;
 @EnableKafka
 @EnableKafkaStreams
 public class KafkaStreamConfig {
+
+    /**
+     *
+     * Note: In idle design, we should run one stream process per JVM
+     */
     @Bean(name = KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
     KafkaStreamsConfiguration strKVkafkaStream() {
         Map<String, Object> props = new HashMap<>();
