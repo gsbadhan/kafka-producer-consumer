@@ -26,7 +26,7 @@ public class SpringKafkaProducerTrx {
         CompletableFuture future = kafkaTemplate.send(topic, key, data);
         try {
             SendResult result = (SendResult) future.get(1000, TimeUnit.MILLISECONDS);
-            log.info("Trx producer ack={}", result);
+            log.info("Trx ack={}", result);
             return true;
         } catch (InterruptedException e) {
             throw new RuntimeException(e);
