@@ -2,7 +2,6 @@ package com.spring.transaction.consumer;
 
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
-import org.apache.kafka.common.IsolationLevel;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -29,6 +28,8 @@ public class KafkaConsumerConfigTrx {
         props.put(ConsumerConfig.ENABLE_AUTO_COMMIT_CONFIG, false);
         props.put(ConsumerConfig.AUTO_OFFSET_RESET_CONFIG, "earliest");
         props.put(ConsumerConfig.ISOLATION_LEVEL_CONFIG, "read_committed");
+        props.put(ConsumerConfig.MAX_POLL_INTERVAL_MS_CONFIG, 300000);
+        props.put(ConsumerConfig.MAX_POLL_RECORDS_CONFIG, 50);
         return new DefaultKafkaConsumerFactory<>(props);
     }
 
@@ -36,8 +37,8 @@ public class KafkaConsumerConfigTrx {
     public ConcurrentKafkaListenerContainerFactory<String, String> kafkaListenerFactoryStringKV() {
         ConcurrentKafkaListenerContainerFactory<String, String> factory = new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactoryStringKV());
-        // enabling manual ack - https://docs.spring.io/spring-kafka/docs/1.0.0.M1/reference/html/_reference.html
         factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.MANUAL);
+        factory.setConcurrency(5);
         log.info("kafkaListenerFactoryStringKV loaded={}", factory);
         return factory;
     }

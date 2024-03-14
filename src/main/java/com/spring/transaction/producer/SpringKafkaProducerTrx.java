@@ -21,7 +21,7 @@ public class SpringKafkaProducerTrx {
     @Qualifier("strKVkafkaTemplateTrx")
     private KafkaTemplate<String, String> kafkaTemplate;
 
-    @Transactional
+    @Transactional(value = "strKafkaTransactionManager")
     public boolean sendMessageStringKV(String topic, String key, String data) {
         CompletableFuture future = kafkaTemplate.send(topic, key, data);
         try {
