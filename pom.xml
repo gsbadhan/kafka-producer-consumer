@@ -25,6 +25,12 @@
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>3.1.2</version>
     </parent>
+    <repositories>
+        <repository>
+            <id>confluent</id>
+            <url>https://maven.repository.redhat.com/earlyaccess/all/</url>
+        </repository>
+    </repositories>
 
     <dependencies>
         <dependency>
@@ -79,6 +85,23 @@
         </dependency>
 
         <dependency>
+            <groupId>org.apache.avro</groupId>
+            <artifactId>avro</artifactId>
+            <version>1.11.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>kafka-avro-serializer</artifactId>
+            <version>5.3.0</version>
+        </dependency>
+        <dependency>
+            <groupId>io.confluent</groupId>
+            <artifactId>common-config</artifactId>
+            <version>5.3.0</version>
+        </dependency>
+
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>${junit}</version>
@@ -90,12 +113,7 @@
             <version>3.0.11</version>
             <scope>test</scope>
         </dependency>
-        <dependency>
-            <groupId>org.testcontainers</groupId>
-            <artifactId>kafka</artifactId>
-            <version>1.19.0</version>
-            <scope>test</scope>
-        </dependency>
+
         <dependency>
             <groupId>org.apache.kafka</groupId>
             <artifactId>kafka-metadata</artifactId>
@@ -135,6 +153,29 @@
                         <includes>**/*TestIT.java</includes>
                     </includes>
                 </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.avro</groupId>
+                <artifactId>avro-maven-plugin</artifactId>
+                <version>1.11.3</version>
+                <executions>
+                    <execution>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>schema</goal>
+                            <goal>protocol</goal>
+                            <goal>idl-protocol</goal>
+                        </goals>
+                        <configuration>
+                            <sourceDirectory>${project.basedir}/src/main/resources/avro</sourceDirectory>
+                            <stringType>String</stringType>
+                            <createSetters>false</createSetters>
+                            <enableDecimalLogicalType>true</enableDecimalLogicalType>
+                            <fieldVisibility>private</fieldVisibility>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

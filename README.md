@@ -31,3 +31,19 @@
 ## pull message from topic (console)
 ./kafka-console-consumer.sh --bootstrap-server localhost:9092 --from-beginning --topic dataitems
 
+
+## for AVRO schema integration, download confluent platform and start schema-registry
+./schema-registry-start ../etc/schema-registry/schema-registry.properties
+
+## AVRO schema location
+resources/avro/user-v1.avsc
+
+## AVRO pojo location
+target/generated-sources/avro/com/avro/dto/User.java
+
+## verify AVRO schema
+http://127.0.0.1:8081/subjects
+http://127.0.0.1:8081/subjects/users-avro-value/versions
+http://127.0.0.1:8081/subjects/users-avro-value/versions/1
+
+
