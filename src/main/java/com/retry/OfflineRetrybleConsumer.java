@@ -20,9 +20,22 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
 /**
- * ./kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 10 --topic test-retry-v1
  * <p>
- * ./kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 10 --topic test-retry-dlq-v1
+ * This class will cover offline retry and send message to DLQ on retry exhausted.
+ *</p>
+ *
+ * * * Create below topics:
+ * <p>./kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 3 --topic
+ * test-retry-v1
+ * <p>
+ * ./kafka-topics.sh --create --bootstrap-server localhost:9092 --replication-factor 1 --partitions 1 --topic
+ * test-retry-dlq-v1
+ * </p>
+ *
+ * * * Use Kafka CLI to send message
+ * <p>
+ * ./kafka-console-producer.sh --broker-list localhost:9092 --topic test-retry-v1
+ * </p>
  */
 
 @Component
@@ -30,44 +43,39 @@ import java.util.concurrent.TimeUnit;
 public class OfflineRetrybleConsumer {
     private static final String NEXT_RETRY_TIME_KEY = "NEXT_RETRY_TIME_KEY";
     private static final String LAST_RETRY_COUNT_KEY = "LAST_RETRY_COUNT";
-    private static final Long MAX_RETRY_COUNT_VALUE = 4L;
+    private static final Long MAX_RETRY_COUNT_VALUE = 2L;
     private static final String RETRY_TOPIC = "test-retry-v1";
     private static final String DLQ_TOPIC = "test-retry-dlq-v1";
-    private static final int PARTITIONS = 10;
-    private static final Long SCHEDULER_RATE = (4L * 60 * 1000);
+    private static final Long RETRY_TIME = (2L * 60 * 1000);
     private static Producer<String, String> producer = getProducer();
 
 
-    @Scheduled(initialDelay = 10, fixedRate = (2*60), timeUnit = TimeUnit.SECONDS)
+    @Scheduled(initialDelay = 5, fixedRate = 60, timeUnit = TimeUnit.SECONDS)
     public void trigger() throws ExecutionException, InterruptedException {
         log.info("trigger started at={}", new Date());
-//        ProducerRecord<String, String> producerRecord = new ProducerRecord<>(RETRY_TOPIC, null, "1001",
-//                "test-app");
-//        RecordMetadata recordMetadata = producer.send(producerRecord).get();
-//        log.info("recordMetadata={}", recordMetadata);
-
         KafkaConsumer consumer = null;
         Set<TopicPartition> pausedTopicPartitions = new HashSet<>();
         try {
             consumer = getConsumer();
-            Thread.sleep(5*1000);
             while (true) {
                 if (!pausedTopicPartitions.isEmpty()) {
                     log.info("pausedTopicPartitions={}", pausedTopicPartitions);
                     consumer.pause(pausedTopicPartitions);
                 }
-                ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(100));
+                ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(5000));
                 if (records.isEmpty()) {
                     log.info("no records found !!");
                     break;
                 }
                 for (ConsumerRecord<String, String> record : records) {
                     Long nextRetryTime = getHeaderValue(record, NEXT_RETRY_TIME_KEY);
+                    Long lastRetryCount = getHeaderValue(record, LAST_RETRY_COUNT_KEY);
                     if (nextRetryTime != null && nextRetryTime > System.currentTimeMillis()) {
                         Set<TopicPartition> topicPartition = new HashSet<>(1);
                         topicPartition.add(new TopicPartition(RETRY_TOPIC, record.partition()));
                         consumer.pause(topicPartition);
-                        log.info("partition paused={} fo record={}", topicPartition, record);
+                        log.info("partition paused for partition={},lastRetryCount={},nextRetryTime={},record={}",
+                                topicPartition, lastRetryCount, new Date(nextRetryTime), record);
                         continue;
                     }
                     processRecord(consumer, record);
@@ -82,7 +90,6 @@ public class OfflineRetrybleConsumer {
     }
 
     private void processRecord(KafkaConsumer consumer, ConsumerRecord<String, String> consumerRecord) {
-        log.info("processRecord={}", consumerRecord);
         List headers = new ArrayList();
         try {
             Thread.sleep(5000);
@@ -92,15 +99,17 @@ public class OfflineRetrybleConsumer {
                         consumerRecord.value(), headers);
                 producer.send(producerRecord);
                 consumer.commitSync();
+                log.info("DLQ processRecord={}", consumerRecord);
             } else {
                 Long retryCount = lastRetryCount + 1L;
-                Long nextRetryTime = System.currentTimeMillis() + (SCHEDULER_RATE * 60 * 1000);
+                Long nextRetryTime = System.currentTimeMillis() + RETRY_TIME;
                 headers.add(new RecordHeader(NEXT_RETRY_TIME_KEY, nextRetryTime.toString().getBytes(StandardCharsets.UTF_8)));
                 headers.add(new RecordHeader(LAST_RETRY_COUNT_KEY, retryCount.toString().getBytes(StandardCharsets.UTF_8)));
                 ProducerRecord<String, String> producerRecord = new ProducerRecord<>(RETRY_TOPIC, null, consumerRecord.key(),
                         consumerRecord.value(), headers);
                 producer.send(producerRecord);
                 consumer.commitSync();
+                log.info("Next time retry processRecord={}", consumerRecord);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -110,12 +119,13 @@ public class OfflineRetrybleConsumer {
     private static KafkaConsumer<String, String> getConsumer() {
         Properties properties = new Properties();
         properties.put("bootstrap.servers", "localhost:9092");
-        properties.put("group.id", "testRetry");
+        properties.put("group.id", "testRetryGrp");
         properties.put("zookeeper.session.timeout.ms", "500");
         properties.put("zookeeper.sync.time.ms", "250");
         properties.put("enable.auto.commit", "false");
         properties.put("auto.commit.interval.ms", "1000");
         properties.put("auto.offset.reset", "earliest");
+        properties.put("max.poll.records", "50");
         properties.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         properties.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         KafkaConsumer<String, String> consumer = new KafkaConsumer<>(properties);

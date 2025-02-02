@@ -30,15 +30,21 @@
 			</fileNamePattern>
 			<timeBasedFileNamingAndTriggeringPolicy
 				class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-				<maxFileSize>10MB</maxFileSize>
+				<maxFileSize>2MB</maxFileSize>
 			</timeBasedFileNamingAndTriggeringPolicy>
 		</rollingPolicy>
-
 	</appender>
+
+	<logger name="org.apache.kafka.clients.consumer.internals.ConsumerCoordinator" level="OFF"/>
+	<logger name="org.apache.kafka.clients.producer.ProducerConfig" level="OFF"/>
+	<logger name="org.apache.kafka.clients.consumer.ConsumerConfig" level="OFF"/>
+	<logger name="org.apache.kafka.common.metrics.Metrics" level="OFF"/>
+	<logger name="org.apache.kafka.common.utils.AppInfoParser" level="OFF"/>
+	<logger name="org.apache.kafka.clients.Metadata" level="OFF"/>
 
 	<root level="INFO">
 		<appender-ref ref="STDOUT" />
-		<appender-ref ref="FILE" />
+<!--		<appender-ref ref="FILE" />-->
 	</root>
 
 </configuration>
